@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> 
+</head>
+<body>
+
+
+<form method="POST" id="post-form">
+  {% csrf_token %}
+  <div class="form-group">
+    <label>Title</label>
+    <input type="text" class="form-control" id="title" placeholder="Title">
+  </div>
+   <div class="form-group">
+     <label>Description</label>
+     <textarea class="form-control" id="description" placeholder="Description"></textarea>
+   </div>
+   <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+
+{% block javascript %}
+<script>
+
+  //https://dev.to/coderasha/how-to-send-django-form-with-ajax-4bpo
+    /*
+        On submiting the form, send the POST ajax
+        request to server and after successfull submission
+        display the object.
+    */
+
+$(document).on('submit', '#post-form',function(e){
+    // preventing from page reload and default actions
+    e.preventDefault();
+    
+    // make POST ajax call
+    $.ajax({
+        type:'POST',
+        url:'{% url "core:post_create" %}',
+        data:{
+            title:$('#title').val(),
+            description:$('#description').val(),
+            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+            action: 'post'
+        },
+        success:function(json){
+            // on successfull creating object
+            // 1. clear the form.
+            document.getElementById("post-form").reset();
+        },
+        // alert the error if any error occured
+        error : function(xhr,errmsg,err) {
+        console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+    }
+    });
+});
+
+</script>
+{% endblock javascript %}
+
+</body>
+</html>
+
